@@ -19,7 +19,14 @@ try {
     );
     // Run a simple query
     $result = $db->exec('SELECT 1');
-    echo 'Database connection successful';
+    echo 'Database connection successful' . "\n";
+
+    // Check tables
+    $tables = $db->exec('SHOW TABLES');
+    echo 'Tables:' . "\n";
+    foreach ($tables as $table) {
+        echo $table['Tables_in_' . $env['DB_NAME']] . "\n";
+    }
 } catch (Exception $e) {
     echo 'Database connection failed: ' . $e->getMessage();
 }

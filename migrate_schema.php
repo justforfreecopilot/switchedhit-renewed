@@ -17,6 +17,10 @@ $db = new DB\SQL(
     $env['DB_PASS']
 );
 
+// Drop existing tables if they exist
+$db->exec('DROP TABLE IF EXISTS teams');
+$db->exec('DROP TABLE IF EXISTS users');
+
 // Read and execute schema.sql
 $sql = file_get_contents('db/schema.sql');
 $db->exec($sql);

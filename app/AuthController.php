@@ -25,12 +25,14 @@ class AuthController {
         $password = $f3->get('POST.password');
 
         if (!$email || !$password) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Email and password required']);
             return;
         }
 
         $user = $db->exec('SELECT * FROM users WHERE email = ?', $email);
         if (!$user || !password_verify($password, $user[0]['password_hash'])) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Invalid credentials']);
             return;
         }
@@ -46,6 +48,7 @@ class AuthController {
 
         $jwt = JWT::encode($payload, $f3->get('JWT_SECRET'), 'HS256');
 
+        header('Content-Type: application/json');
         echo json_encode(['token' => $jwt, 'user' => ['id' => $user[0]['id'], 'email' => $user[0]['email'], 'role' => $user[0]['role']]]);
     }
 
@@ -57,10 +60,10 @@ class AuthController {
         $password = $f3->get('POST.password');
         $team_name = $f3->get('POST.team_name');
         $stadium_name = $f3->get('POST.stadium_name');
-        $details = $f3->get('POST.details');
         $pitch_type = $f3->get('POST.pitch_type');
 
         if (!$email || !$password || !$team_name || !$pitch_type) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Required fields missing']);
             return;
         }
@@ -68,6 +71,7 @@ class AuthController {
         // Check if email exists
         $existing = $db->exec('SELECT id FROM users WHERE email = ?', $email);
         if ($existing) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Email already exists']);
             return;
         }
@@ -79,8 +83,8 @@ class AuthController {
             $db->exec('INSERT INTO users (email, password_hash) VALUES (?, ?)', [$email, $password_hash]);
             $user_id = $db->lastInsertId();
 
-            $db->exec('INSERT INTO teams (name, stadium_name, details, pitch_type, user_id) VALUES (?, ?, ?, ?, ?)', 
-                [$team_name, $stadium_name, $details, $pitch_type, $user_id]);
+            $db->exec('INSERT INTO teams (name, stadium_name, pitch_type, user_id) VALUES (?, ?, ?, ?)', 
+                [$team_name, $stadium_name, $pitch_type, $user_id]);
 
             $db->commit();
 
@@ -95,9 +99,11 @@ class AuthController {
 
             $jwt = JWT::encode($payload, $f3->get('JWT_SECRET'), 'HS256');
 
+            header('Content-Type: application/json');
             echo json_encode(['token' => $jwt, 'user' => ['id' => $user_id, 'email' => $email, 'role' => 'user']]);
         } catch (Exception $e) {
             $db->rollback();
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Registration failed']);
         }
     }
@@ -108,6 +114,7 @@ class AuthController {
 
         $authHeader = $f3->get('HEADERS.Authorization');
         if (!$authHeader || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Unauthorized']);
             return;
         }
@@ -117,16 +124,19 @@ class AuthController {
             $decoded = JWT::decode($token, new Key($f3->get('JWT_SECRET'), 'HS256'));
             $user_id = $decoded->user_id;
         } catch (Exception $e) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Invalid token']);
             return;
         }
 
         $team = $db->exec('SELECT * FROM teams WHERE user_id = ?', $user_id);
         if (!$team) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Team not found']);
             return;
         }
 
+        header('Content-Type: application/json');
         echo json_encode(['team' => $team[0]]);
     }
 
@@ -135,6 +145,7 @@ class AuthController {
 
         $authHeader = $f3->get('HEADERS.Authorization');
         if (!$authHeader || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Unauthorized']);
             return;
         }
@@ -142,8 +153,10 @@ class AuthController {
         $token = $matches[1];
         try {
             $decoded = JWT::decode($token, new Key($f3->get('JWT_SECRET'), 'HS256'));
+            header('Content-Type: application/json');
             echo json_encode(['user' => ['id' => $decoded->user_id, 'email' => 'hidden', 'role' => $decoded->role]]);
         } catch (Exception $e) {
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Invalid token']);
         }
     }

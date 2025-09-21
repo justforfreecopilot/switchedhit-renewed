@@ -17,6 +17,12 @@ $db = new DB\SQL(
     $env['DB_PASS']
 );
 
+// Clear existing data
+$db->exec('SET FOREIGN_KEY_CHECKS = 0');
+$db->exec('TRUNCATE TABLE teams');
+$db->exec('TRUNCATE TABLE users');
+$db->exec('SET FOREIGN_KEY_CHECKS = 1');
+
 // Read and execute seed.sql
 $sql = file_get_contents('db/seed.sql');
 $db->exec($sql);

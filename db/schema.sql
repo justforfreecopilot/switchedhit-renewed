@@ -14,8 +14,7 @@ CREATE TABLE teams (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     stadium_name VARCHAR(255),
-    details TEXT,
-    pitch_type ENUM('grass', 'turf', 'artificial') NOT NULL,
+    pitch_type ENUM('Hard', 'Green', 'Flat', 'Dusty', 'Uneven') NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
