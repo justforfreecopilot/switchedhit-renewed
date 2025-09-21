@@ -25,7 +25,7 @@ This sprint focuses on setting up the development environment, project structure
 - **Create basic documentation**: Set up README.md with project overview, setup instructions, and basic usage.
 
 ### Initial Configuration Actions
-- **Configure F3 templates**: Convert a sample HTML template to F3 format (e.g., `{{@title}}` variables).
+- **Configure F3 templates**: Convert a sample HTML template to F3 format (e.g., `{{@title}}` variables). Use html\front-pages-no-customizer\landing-page.html for this.
 - **Set up basic routing**: Define routes for home page, login, and register in F3.
 - **Implement basic error handling**: Set up F3's error handling and logging.
 - **Configure CORS**: If needed, set up CORS headers for API access.
