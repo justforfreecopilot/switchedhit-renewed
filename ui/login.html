@@ -189,6 +189,31 @@
     <!-- Page JS -->
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+        // Check if user is already authenticated
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Verify token is valid by calling API
+          fetch('/api/user/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (!data.error) {
+              // Token is valid, redirect to dashboard
+              window.location.href = '/dashboard';
+            } else {
+              // Token is invalid, remove it
+              localStorage.removeItem('token');
+            }
+          })
+          .catch(() => {
+            // API call failed, remove token
+            localStorage.removeItem('token');
+          });
+        }
+
         (function () {
           // Form validation for Add new record
           // const fv = FormValidation.formValidation(document.getElementById('formAuthentication'), {
@@ -240,9 +265,9 @@
                 fetch('/api/login', {
                   method: 'POST',
                   headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                   },
-                  body: new URLSearchParams({ email, password })
+                  body: JSON.stringify({ email, password })
                 })
                 .then(response => response.json())
                 .then(data => {

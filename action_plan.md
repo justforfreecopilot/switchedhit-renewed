@@ -107,11 +107,16 @@ This sprint enhances the registration flow to automatically generate a starting 
 - **Implement database indexes for performance**: Add indexes on `players.team_id`, `players.position`, and `teams.user_id` to speed up queries.
 
 ### Testing and Validation Actions
+- **Set up Cypress E2E testing framework**: Install and configure Cypress for comprehensive end-to-end testing with custom commands and fixtures.
+- **Create authentication test suite**: Test login, registration, session management, and authentication flow with both UI and API validation.
+- **Implement player management tests**: Comprehensive testing of player generation, list views, filtering, search, and detail modals.
+- **Build API integration tests**: Direct API testing for all endpoints including authentication, player management, and team composition.
 - **Test player generation during registration**: Verify that 11 players are created with balanced stats and positions upon team registration.
 - **Validate player list and detail views**: Ensure player data displays correctly, with sorting, filtering, and detailed stats.
 - **Test team overview and dashboard updates**: Check that team composition and summaries are accurate and visually appealing.
 - **Validate backend APIs**: Test player CRUD operations, stat calculations, and composition validation.
 - **Check database schema and relationships**: Ensure tables are created correctly with proper constraints and indexes.
+- **Run automated test suite**: Execute full Cypress test suite to validate all Sprint 2 features work correctly.
 
 ### Sprint 2 Completion Criteria
 - [x] Registration flow enhanced with automatic player generation
@@ -128,6 +133,8 @@ This sprint enhances the registration flow to automatically generate a starting 
 - [x] Player stats embedded or table created
 - [x] Foreign key relationships added
 - [x] Database indexes implemented
+- [x] Cypress E2E testing framework integrated
+- [x] Comprehensive test suite implemented (authentication, player management, API integration)
 - [x] All features tested and validated
 
 ## Sprint 3: Setup/Configure Daily Team Lineup

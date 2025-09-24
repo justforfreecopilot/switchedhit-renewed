@@ -68,6 +68,15 @@ This document outlines the detailed tasks for building the SwitchedHit MVP, orga
 - **Set up database migrations**: Add the above schemas to `db/schema.sql`. Run the script to create tables in MySQL. Ensure foreign key constraints are enforced.
 - **Implement data validation constraints**: Add CHECK constraints or triggers for data integrity (e.g., ensure email is valid format, pitch_type is from allowed values). Use UNIQUE constraints for email.
 
+### Testing Tasks (Cypress E2E)
+- **Set up Cypress testing framework**: Install Cypress (`npm install --save-dev cypress`), configure `cypress.config.js` with base URL and settings, create folder structure for tests, fixtures, and support files.
+- **Create authentication test suite**: Build comprehensive tests for login/register flows including form validation, success/error scenarios, session management, and redirect behavior.
+- **Implement dashboard tests**: Test dashboard loading, team information display, navigation components, and responsive design across different viewport sizes.
+- **Build API integration tests**: Create direct API tests for authentication endpoints, user management, and error handling scenarios.
+- **Add custom Cypress commands**: Develop reusable commands for login (`cy.login()`), logout (`cy.logout()`), authentication checks, and API testing helpers.
+- **Cross-browser testing setup**: Configure tests to run in Chrome, Firefox, and Edge browsers with both headless and headed modes.
+- **Create test runner scripts**: Build batch/shell scripts for running different test suites (auth tests, API tests, all tests, browser-specific tests).
+
 ---
 
 ## Sprint 2: Register Flow V2
@@ -103,6 +112,15 @@ This document outlines the detailed tasks for building the SwitchedHit MVP, orga
 - **Create player stats table or embed stats in player table**: Embed stats in `players` table with columns like speed (INT), strength (INT), technique (INT), overall_rating (INT computed). Alternatively, create a separate `player_stats` table linked by player_id for flexibility.
 - **Add foreign key relationships**: Ensure `players.team_id` references `teams.id`, and `teams.user_id` references `users.id`. Add CASCADE on delete for data integrity.
 - **Implement database indexes for performance**: Add indexes on `players.team_id`, `players.position`, and `teams.user_id` to speed up queries.
+
+### Testing Tasks (Cypress E2E)
+- **Extend authentication tests**: Add tests for enhanced registration flow with player generation, validate that 11 players are created with proper positions and stats.
+- **Create player management test suite**: Build comprehensive tests for player list view, filtering by position/age, search functionality, and player detail modals with progress bars and stats display.
+- **Implement team composition tests**: Test team overview page with formation display, position breakdown cards, and football pitch visualization with clickable player cards.
+- **Add dashboard integration tests**: Validate dashboard enhancements including player summary cards, top players table, and navigation to player pages.
+- **Build player generation API tests**: Test automatic player creation during registration, validate stat ranges, position distribution, and team composition rules.
+- **Create UI interaction tests**: Test modal interactions, table sorting/filtering, form submissions, and responsive design across different screen sizes.
+- **Add data validation tests**: Ensure player stats are within valid ranges, positions are correctly assigned, and database constraints are enforced.
 
 ---
 
@@ -149,6 +167,15 @@ This document outlines the detailed tasks for building the SwitchedHit MVP, orga
   ```
 - **Implement age and morale fields in player table**: Add columns age (INT), morale (INT) to `players` table if not already present. Update from Sprint 2 schema.
 - **Create database triggers for automatic age updates**: Add a trigger or stored procedure to update player ages daily. Optionally, update stats based on age milestones.
+
+### Testing Tasks (Cypress E2E)
+- **Create lineup management tests**: Test lineup configuration interface with formation selection (4-4-2, 3-5-2), drag-and-drop player positioning, and position validation.
+- **Implement daily lineup API tests**: Validate lineup saving/loading endpoints, ensure lineup validation rules (11 players, correct positions, no duplicates), and test error handling.
+- **Build player progression tests**: Test daily stats updates, age progression system, morale changes, and stat modification based on training/events.
+- **Add formation visualization tests**: Test pitch diagram rendering, player positioning interface, formation switching, and responsive layout on different screen sizes.
+- **Create lineup validation tests**: Ensure invalid lineups are rejected (wrong number of players, invalid positions, duplicate players), and proper error messages are displayed.
+- **Implement daily workflow tests**: Test complete daily cycle including lineup submission, stat updates, age progression, and morale adjustments.
+- **Add database integrity tests**: Validate lineup table constraints, foreign key relationships, daily_stats tracking, and trigger functionality for automatic updates.
 
 ---
 
@@ -211,6 +238,15 @@ This document outlines the detailed tasks for building the SwitchedHit MVP, orga
   );
   ```
 
+### Testing Tasks (Cypress E2E)
+- **Create auction/marketplace UI tests**: Test auction listing interface, bidding forms, marketplace buy/sell functionality, and filter/search capabilities.
+- **Implement bidding system tests**: Test blind bidding interface, bid submission, countdown timers, auction resolution, and winner notification.
+- **Build wallet/budget tests**: Test budget display, transaction processing, balance updates, and insufficient funds error handling.
+- **Add marketplace transaction tests**: Test player listing creation, buy/sell operations, ownership transfers, and transaction history display.
+- **Create auction API tests**: Validate auction creation, bid processing, auction resolution logic, and database transaction integrity.
+- **Implement financial transaction tests**: Test budget deductions, earnings additions, transaction logging, and concurrent transaction handling.
+- **Add marketplace security tests**: Ensure users can only list their own players, validate ownership transfers, and test authorization for financial operations.
+
 ---
 
 ## Sprint 5: Simulate Practice Match
@@ -268,6 +304,15 @@ This document outlines the detailed tasks for building the SwitchedHit MVP, orga
   );
   ```
 - **Implement match history storage**: Ensure matches are stored with full details. Add indexes on match_id for event queries.
+
+### Testing Tasks (Cypress E2E)
+- **Create match simulation tests**: Test match viewer interface, scorecard display, team lineup presentation, and real-time progress updates.
+- **Implement commentary system tests**: Test ball-by-ball event display, live feed updates, event filtering, and match progression visualization.
+- **Build simulation engine tests**: Test deterministic match outcomes, player stat influence on events, commentary generation, and result calculation.
+- **Add match setup tests**: Test opponent selection, formation choice, match configuration, and pre-match validation.
+- **Create real-time update tests**: Test WebSocket/polling functionality, progress bar updates, live score changes, and match completion handling.
+- **Implement match API tests**: Validate match creation, simulation execution, event logging, result storage, and match history retrieval.
+- **Add simulation parameter tests**: Test configurable simulation settings, parameter validation, and impact on match outcomes.
 
 ---
 
@@ -344,3 +389,12 @@ This document outlines the detailed tasks for building the SwitchedHit MVP, orga
       FOREIGN KEY (match_id) REFERENCES matches(id)
   );
   ```
+
+### Testing Tasks (Cypress E2E)
+- **Create league standings tests**: Test league table display, position calculations, points/wins/losses tracking, and filter functionality for different divisions.
+- **Implement promotion/relegation tests**: Test end-of-season processing, team movement between leagues, relegation zone warnings, and league assignment updates.
+- **Build league fixture tests**: Test match scheduling interface, fixture generation, calendar view, and result display for completed matches.
+- **Add league management tests**: Test admin interface for league creation, team assignment, rule configuration, and season management.
+- **Create league simulation tests**: Test automatic league progression, fixture scheduling, match simulation integration, and standings calculation.
+- **Implement league API tests**: Validate league creation, team assignment logic, promotion/relegation processing, and fixture generation algorithms.
+- **Add multi-league tests**: Test multiple division handling, cross-league functionality, and season transition between different competition levels.

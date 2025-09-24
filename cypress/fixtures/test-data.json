@@ -1,0 +1,29 @@
+{
+  "users": {
+    "testUser": {
+      "email": "test@gel.com",
+      "password": "test@gel.com",
+      "team_name": "Test Team",
+      "stadium_name": "Test Stadium",
+      "pitch_type": "Hard"
+    },
+    "newUser": {
+      "email": "newuser@example.com",
+      "password": "password123",
+      "team_name": "New User Team",
+      "stadium_name": "New Stadium",
+      "pitch_type": "Green"
+    }
+  },
+  "api": {
+    "baseUrl": "http://localhost:8080/api",
+    "endpoints": {
+      "login": "/login",
+      "register": "/register",
+      "userMe": "/user/me",
+      "userTeam": "/user/team",
+      "players": "/players/my",
+      "teamComposition": "/team/composition"
+    }
+  }
+}

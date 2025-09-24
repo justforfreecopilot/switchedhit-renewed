@@ -1,0 +1,32 @@
+{
+  "name": "self-design",
+  "version": "1.0.0",
+  "description": "SwitchedHit is a fantasy sports management game where users create and manage virtual cricket teams, participate in auctions, simulate matches, and compete in leagues.",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:headless": "cypress run --headless",
+    "test:chrome": "cypress run --browser chrome",
+    "test:chrome:headed": "cypress run --browser chrome --headed",
+    "test:firefox": "cypress run --browser firefox",
+    "test:firefox:headed": "cypress run --browser firefox --headed",
+    "test:edge": "cypress run --browser edge",
+    "test:electron": "cypress run --browser electron",
+    "test:browsers": "npm run test:chrome && npm run test:firefox && npm run test:edge"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justforfreecopilot/switchedhit-renewed.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justforfreecopilot/switchedhit-renewed/issues"
+  },
+  "homepage": "https://github.com/justforfreecopilot/switchedhit-renewed#readme",
+  "devDependencies": {
+    "cypress": "^15.3.0"
+  }
+}
