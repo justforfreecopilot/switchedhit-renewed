@@ -2,8 +2,14 @@
 <html lang="en" class="layout-navbar-fixed layout-menu-fixed layout-compact" dir="ltr" data-skin="default" data-bs-theme="light" data-assets-path="assets/" data-template="vertical-menu-template">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>{{@title}} - SwitchedHit</title>
+    <meta name="viewport" content="widt                                <h5 class="card-title mb-0">Cricket Team Setup</h5>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted me-3">Playing XI: Cricket Formation</small>
+                                    <button class="btn btn-sm btn-primary" onclick="refreshTeam()">
+                                        <i class="bx bx-refresh me-1"></i>Refresh
+                                    </button>
+                                </div>e-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <title>Cricket Lineup Management - SwitchedHit</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" />
@@ -24,89 +30,148 @@
     <script src="assets/js/config.js"></script>
 
     <style>
-        .football-pitch {
-            background: linear-gradient(90deg, #4CAF50 0%, #66BB6A 50%, #4CAF50 100%);
-            border: 3px solid #2E7D32;
+        /* Batting Order Styles */
+        .player-pool, .batting-lineup, .bowler-pool {
+            min-height: 400px;
+            padding: 15px;
+            border: 2px dashed #ddd;
             border-radius: 8px;
-            position: relative;
-            min-height: 600px;
-            padding: 20px;
+            background-color: #f8f9fa;
         }
         
-        .pitch-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-        }
-        
-        .center-circle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100px;
-            height: 100px;
-            border: 2px solid white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-        
-        .center-line {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 2px;
-            height: 100%;
-            background: white;
-            transform: translateX(-50%);
-        }
-        
-        .penalty-area-left, .penalty-area-right {
-            position: absolute;
-            top: 50%;
-            width: 80px;
-            height: 150px;
-            border: 2px solid white;
-            transform: translateY(-50%);
-        }
-        
-        .penalty-area-left {
-            left: 0;
-            border-right: none;
-        }
-        
-        .penalty-area-right {
-            right: 0;
-            border-left: none;
-        }
-        
-        .formation-container {
-            position: relative;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .formation-line {
-            flex: 1;
+        .batting-position {
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            padding: 10px 0;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .position-number {
+            background: #1976D2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .player-slot {
+            flex: 1;
+            min-height: 45px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .player-slot.filled {
+            border: 2px solid #28a745;
+            background: #e8f5e8;
+        }
+        
+        .player-slot:hover {
+            border-color: #1976D2;
+            background: #e3f2fd;
+        }
+        
+        .slot-text {
+            color: #666;
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+        
+        /* Bowling Order Styles */
+        .bowling-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .over-slot {
+            aspect-ratio: 1;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .over-slot:hover {
+            border-color: #1976D2;
+            background: #e3f2fd;
+        }
+        
+        .over-slot.filled {
+            border-color: #28a745;
+            background: #e8f5e8;
+        }
+        
+        .over-slot .over-number {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .over-slot .bowler-name {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 2px;
+        }
+        
+        .bowling-rules {
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
         }
         
         .player-card {
             background: white;
             border: 2px solid #1976D2;
             border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .player-card:active {
+            cursor: grabbing;
+        }
+        
+        .player-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .bowler-card {
+            background: #f8f9fa;
+            border: 2px solid #28a745;
+            border-radius: 6px;
             padding: 8px;
+            margin-bottom: 6px;
+            cursor: grab;
+            transition: all 0.2s;
             text-align: center;
-            min-width: 80px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.2s;
+            font-size: 0.85rem;
         }
         
         .player-card:hover {
@@ -160,7 +225,7 @@
                 <div class="menu-inner-shadow"></div>
 
                 <ul class="menu-inner py-1">
-                    <!-- Main -->
+                    <!-- Dashboard -->
                     <li class="menu-item">
                         <a href="/dashboard" class="menu-link">
                             <i class="menu-icon icon-base ri ri-dashboard-line"></i>
@@ -168,11 +233,11 @@
                         </a>
                     </li>
 
-                    <!-- Players -->
+                    <!-- Squad Management -->
                     <li class="menu-item active open">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon icon-base ri ri-team-line"></i>
-                            <div>Players</div>
+                            <div>Squad</div>
                         </a>
                         <ul class="menu-sub">
                             <li class="menu-item">
@@ -182,17 +247,31 @@
                             </li>
                             <li class="menu-item active">
                                 <a href="/team-composition" class="menu-link">
-                                    <div>Team Overview</div>
+                                    <div>Lineup Management</div>
                                 </a>
                             </li>
                         </ul>
                     </li>
 
-                    <!-- Future features -->
+                    <!-- Cricket Features -->
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link">
+                            <i class="menu-icon icon-base ri ri-trophy-line"></i>
+                            <div>Matches</div>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link">
+                            <i class="menu-icon icon-base ri ri-bar-chart-line"></i>
+                            <div>Statistics</div>
+                        </a>
+                    </li>
+
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link">
                             <i class="menu-icon icon-base ri ri-settings-line"></i>
-                            <div>Lineup</div>
+                            <div>Team Settings</div>
                         </a>
                     </li>
                 </ul>
@@ -246,7 +325,7 @@
                     <!-- Content -->
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <h4 class="py-3 mb-4">
-                            <span class="text-muted fw-light">Team /</span> Overview
+                            <span class="text-muted fw-light">Squad /</span> Lineup Management
                         </h4>
 
                         <!-- Team Info -->
@@ -258,7 +337,7 @@
                                         <p class="card-text">
                                             <small class="text-muted">
                                                 <i class="icon-base ri ri-building-line me-1"></i>
-                                                Stadium: <span id="team-stadium">-</span>
+                                                Ground: <span id="team-stadium">-</span>
                                             </small><br>
                                             <small class="text-muted">
                                                 <i class="icon-base ri ri-grass-line me-1"></i>
@@ -270,7 +349,7 @@
                                         <div class="stats-grid">
                                             <div class="text-center">
                                                 <h6 class="mb-1" id="total-players">0</h6>
-                                                <small class="text-muted">Total Players</small>
+                                                <small class="text-muted">Squad Size</small>
                                             </div>
                                             <div class="text-center">
                                                 <h6 class="mb-1" id="avg-age">0</h6>
@@ -278,7 +357,7 @@
                                             </div>
                                             <div class="text-center">
                                                 <h6 class="mb-1" id="team-rating">0</h6>
-                                                <small class="text-muted">Team Rating</small>
+                                                <small class="text-muted">Squad Rating</small>
                                             </div>
                                         </div>
                                     </div>
@@ -286,30 +365,145 @@
                             </div>
                         </div>
 
-                        <!-- Formation Display -->
-                        <div class="card">
+                        <!-- Batting Order Management -->
+                        <div class="card mb-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Team Formation</h5>
-                                <div class="d-flex align-items-center">
-                                    <small class="text-muted me-3">Formation: 4-4-2</small>
-                                    <button class="btn btn-sm btn-primary" onclick="refreshFormation()">
-                                        <i class="icon-base ri ri-refresh-line me-1"></i>Refresh
+                                <h5 class="card-title mb-0">🏏 Batting Order</h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="text-muted me-3">Playing XI (11 players)</small>
+                                    <button class="btn btn-sm btn-success" onclick="saveBattingOrder()">
+                                        <i class="ri-save-line me-1"></i>Save Order
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" onclick="autoSetBattingOrder()">
+                                        <i class="ri-magic-line me-1"></i>Auto Set
                                     </button>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="football-pitch">
-                                    <!-- Pitch lines -->
-                                    <div class="pitch-lines">
-                                        <div class="center-line"></div>
-                                        <div class="center-circle"></div>
-                                        <div class="penalty-area-left"></div>
-                                        <div class="penalty-area-right"></div>
+                                <div class="row">
+                                    <!-- Squad Players (Left Side) -->
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold mb-3">Available Squad (15 players)</h6>
+                                        <div id="squad-players" class="player-pool">
+                                            <!-- Squad players will be loaded here -->
+                                        </div>
                                     </div>
                                     
-                                    <!-- Formation container -->
-                                    <div class="formation-container" id="formation-container">
-                                        <!-- Players will be dynamically placed here -->
+                                    <!-- Batting Order (Right Side) -->
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold mb-3">Batting Order (Drag players here)</h6>
+                                        <div id="batting-order" class="batting-lineup">
+                                            <!-- Batting order positions 1-11 -->
+                                            <div class="batting-position" data-position="1">
+                                                <span class="position-number">1</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop opener here</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="2">
+                                                <span class="position-number">2</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop opener here</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="3">
+                                                <span class="position-number">3</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop #3 batsman</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="4">
+                                                <span class="position-number">4</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop #4 batsman</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="5">
+                                                <span class="position-number">5</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop #5 batsman</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="6">
+                                                <span class="position-number">6</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop finisher</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="7">
+                                                <span class="position-number">7</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop all-rounder</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="8">
+                                                <span class="position-number">8</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop bowler</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="9">
+                                                <span class="position-number">9</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop bowler</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="10">
+                                                <span class="position-number">10</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop bowler</span>
+                                                </div>
+                                            </div>
+                                            <div class="batting-position" data-position="11">
+                                                <span class="position-number">11</span>
+                                                <div class="player-slot" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                                    <span class="slot-text">Drop bowler</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bowling Order Management -->
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">⚡ Bowling Order</h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="text-muted me-3">20 Overs | Max 4 per bowler</small>
+                                    <button class="btn btn-sm btn-success" onclick="saveBowlingOrder()">
+                                        <i class="ri-save-line me-1"></i>Save Order
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" onclick="autoSetBowlingOrder()">
+                                        <i class="ri-magic-line me-1"></i>Auto Set
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Available Bowlers -->
+                                    <div class="col-md-4">
+                                        <h6 class="fw-bold mb-3">Available Bowlers</h6>
+                                        <div id="available-bowlers" class="bowler-pool">
+                                            <!-- Bowlers will be loaded here -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Bowling Order Grid -->
+                                    <div class="col-md-8">
+                                        <h6 class="fw-bold mb-3">Bowling Order (20 Overs)</h6>
+                                        <div class="bowling-grid" id="bowling-grid">
+                                            <!-- 20 over slots will be generated here -->
+                                        </div>
+                                        <div class="bowling-rules mt-3">
+                                            <small class="text-muted">
+                                                <strong>Rules:</strong> 
+                                                • Max 4 overs per bowler 
+                                                • No consecutive overs for same bowler
+                                                • Drag bowlers to over slots
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -450,8 +644,9 @@
         }
 
         let teamData = null;
-        let playersData = [];
-        let compositionData = {};
+        let squadPlayers = [];
+        let battingOrder = [];
+        let bowlingOrder = [];
 
         // Logout function
         function logout() {
@@ -461,6 +656,9 @@
 
         // Load team composition data
         async function loadTeamComposition() {
+            // Show loading state
+            document.getElementById('squad-players').innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading players...</span></div><p class="mt-2">Loading squad...</p></div>';
+            
             try {
                 const response = await fetch('/api/team/composition', {
                     headers: {
@@ -470,20 +668,58 @@
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Team composition data:', data);
                     teamData = data.team;
-                    playersData = data.players;
-                    compositionData = data.composition;
+                    squadPlayers = data.players; // Now 15 players
+                    console.log('Squad players loaded:', squadPlayers.length);
                     
                     updateTeamInfo(data.stats);
-                    renderFormation();
-                    renderPositionBreakdown();
+                    await loadBattingOrder();
+                    await loadBowlingOrder();
+                    renderSquadPlayers();
+                    renderBattingOrder();
+                    renderBowlingOrder();
                 } else if (response.status === 401) {
                     logout();
+                } else if (response.status === 404) {
+                    console.error('No team found - please register a team first');
+                    document.getElementById('squad-players').innerHTML = '<div class="alert alert-warning">No team found. Please <a href="/register">register a team</a> first.</div>';
                 } else {
-                    console.error('Failed to load team composition');
+                    console.error('Failed to load team composition, status:', response.status);
+                    document.getElementById('squad-players').innerHTML = '<div class="alert alert-danger">Failed to load team data. Please try refreshing the page.</div>';
                 }
             } catch (error) {
                 console.error('Error loading team composition:', error);
+            }
+        }
+
+        // Load batting order
+        async function loadBattingOrder() {
+            try {
+                const response = await fetch('/api/team/batting-order', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    battingOrder = data.battingOrder || [];
+                }
+            } catch (error) {
+                console.error('Error loading batting order:', error);
+            }
+        }
+
+        // Load bowling order
+        async function loadBowlingOrder() {
+            try {
+                const response = await fetch('/api/team/bowling-order', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    bowlingOrder = data.bowlingOrder || [];
+                }
+            } catch (error) {
+                console.error('Error loading bowling order:', error);
             }
         }
 
@@ -498,68 +734,51 @@
             document.getElementById('team-rating').textContent = `${stats.average_rating}/100`;
         }
 
-        // Render formation on the pitch
-        function renderFormation() {
-            const container = document.getElementById('formation-container');
+        // Render squad players (15 players available for selection)
+        function renderSquadPlayers() {
+            console.log('renderSquadPlayers called, squadPlayers:', squadPlayers);
+            const container = document.getElementById('squad-players');
+            if (!container) {
+                console.error('Squad players container not found');
+                return;
+            }
+            
             container.innerHTML = '';
             
-            // Define formation structure (4-4-2)
-            const formation = [
-                { positions: ['GK'], line: 'goalkeeper' },
-                { positions: ['LB', 'CB', 'CB', 'RB'], line: 'defense' },
-                { positions: ['LM', 'CM', 'CM', 'RM'], line: 'midfield' },
-                { positions: ['ST', 'ST'], line: 'attack' }
-            ];
+            if (!squadPlayers || squadPlayers.length === 0) {
+                console.log('No squad players available');
+                container.innerHTML = '<div class="text-muted">No players available</div>';
+                return;
+            }
             
-            // Map position aliases to actual positions
-            const positionMap = {
-                'LM': ['LW', 'CM'],
-                'RM': ['RW', 'CM'],
-                'CM': ['CM', 'CDM', 'CAM']
-            };
-            
-            formation.forEach(line => {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'formation-line';
+            squadPlayers.forEach(player => {
+                // Check if player is already in batting order
+                const isInBattingOrder = battingOrder.some(p => p && p.id === player.id);
+                if (isInBattingOrder) return;
                 
-                line.positions.forEach(pos => {
-                    // Find player for this position
-                    let player = null;
-                    if (positionMap[pos]) {
-                        // Try to find player from mapped positions
-                        for (let mappedPos of positionMap[pos]) {
-                            if (compositionData[mappedPos] && compositionData[mappedPos].length > 0) {
-                                player = compositionData[mappedPos][0];
-                                break;
-                            }
-                        }
-                    } else if (compositionData[pos] && compositionData[pos].length > 0) {
-                        player = compositionData[pos][0];
-                    }
-                    
-                    const playerCard = document.createElement('div');
-                    playerCard.className = 'player-card';
-                    
-                    if (player) {
-                        playerCard.innerHTML = `
-                            <div class="player-name">${player.name}</div>
-                            <div class="player-position">${player.position}</div>
-                            <div class="player-rating">${player.overall_rating}</div>
-                        `;
-                        playerCard.onclick = () => showPlayerDetail(player.id);
-                    } else {
-                        playerCard.innerHTML = `
-                            <div class="player-name">Empty</div>
-                            <div class="player-position">${pos}</div>
-                            <div class="player-rating">-</div>
-                        `;
-                        playerCard.style.opacity = '0.5';
-                    }
-                    
-                    lineDiv.appendChild(playerCard);
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.draggable = true;
+                playerCard.dataset.playerId = player.id;
+                playerCard.innerHTML = `
+                    <div class="fw-bold">${player.name}</div>
+                    <small class="text-muted">${player.position}</small>
+                    <div class="d-flex justify-content-between mt-1">
+                        <small>Avg: ${player.batting_average}</small>
+                        <small>Rating: ${player.overall_rating}</small>
+                    </div>
+                `;
+                
+                playerCard.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', player.id);
+                    this.classList.add('dragging');
                 });
                 
-                container.appendChild(lineDiv);
+                playerCard.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+                
+                container.appendChild(playerCard);
             });
         }
 
@@ -568,18 +787,18 @@
             const container = document.getElementById('position-breakdown');
             container.innerHTML = '';
             
-            const positionNames = {
-                'GK': 'Goalkeeper',
-                'LB': 'Left Back',
-                'CB': 'Center Back',
-                'RB': 'Right Back',
-                'CDM': 'Def. Midfielder',
-                'CM': 'Midfielder',
-                'CAM': 'Att. Midfielder',
-                'LW': 'Left Wing',
-                'RW': 'Right Wing',
-                'ST': 'Striker',
-                'CF': 'Forward'
+            const cricketPositionNames = {
+                'Wicket-keeper': 'Wicket-keeper',
+                'Opening-batsman': 'Opening Batsman',
+                'Middle-order': 'Middle Order',
+                'Finisher': 'Finisher',
+                'All-rounder': 'All-rounder',
+                'Fast-bowler': 'Fast Bowler',
+                'Spin-bowler': 'Spin Bowler',
+                'Medium-pacer': 'Medium Pacer',
+                'Batsman': 'Batsman',
+                'Bowler': 'Bowler',
+                'Specialist-fielder': 'Specialist Fielder'
             };
             
             Object.keys(compositionData).forEach(position => {
@@ -599,7 +818,7 @@
                                     <i class="icon-base ri ri-user-line icon-24px"></i>
                                 </div>
                             </div>
-                            <h6 class="card-title mb-1">${positionNames[position] || position}</h6>
+                            <h6 class="card-title mb-1">${cricketPositionNames[position] || position}</h6>
                             <p class="card-text">
                                 <small class="text-muted">${players.length} player${players.length > 1 ? 's' : ''}</small><br>
                                 <span class="badge bg-label-success">Avg: ${avgRating.toFixed(1)}</span>
@@ -655,9 +874,248 @@
             }
         }
 
-        // Refresh formation
-        function refreshFormation() {
-            loadTeamComposition();
+        // Render batting order
+        function renderBattingOrder() {
+            for (let i = 1; i <= 11; i++) {
+                const slot = document.querySelector(`[data-position="${i}"] .player-slot`);
+                const player = battingOrder[i - 1];
+                
+                if (player) {
+                    slot.className = 'player-slot filled';
+                    slot.innerHTML = `
+                        <div class="fw-bold">${player.name}</div>
+                        <small>${player.position} | Avg: ${player.batting_average}</small>
+                    `;
+                } else {
+                    slot.className = 'player-slot';
+                    const hints = ['Drop opener here', 'Drop opener here', 'Drop #3 batsman', 'Drop #4 batsman', 'Drop #5 batsman', 'Drop finisher', 'Drop all-rounder', 'Drop bowler', 'Drop bowler', 'Drop bowler', 'Drop bowler'];
+                    slot.innerHTML = `<span class="slot-text">${hints[i-1]}</span>`;
+                }
+            }
+            renderSquadPlayers(); // Refresh available players
+        }
+
+        // Render bowling order
+        function renderBowlingOrder() {
+            const container = document.getElementById('bowling-grid');
+            container.innerHTML = '';
+            
+            for (let over = 1; over <= 20; over++) {
+                const overSlot = document.createElement('div');
+                overSlot.className = 'over-slot';
+                overSlot.dataset.over = over;
+                overSlot.innerHTML = `
+                    <div class="over-number">Over ${over}</div>
+                    <div class="bowler-name"></div>
+                `;
+                
+                overSlot.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const bowlerId = e.dataTransfer.getData('text/plain');
+                    assignBowlerToOver(bowlerId, over);
+                });
+                
+                overSlot.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+                
+                container.appendChild(overSlot);
+            }
+            
+            renderAvailableBowlers();
+            updateBowlingGrid();
+        }
+
+        // Render available bowlers
+        function renderAvailableBowlers() {
+            const container = document.getElementById('available-bowlers');
+            container.innerHTML = '';
+            
+            const bowlers = squadPlayers.filter(p => 
+                p.position.includes('bowler') || p.position === 'All-rounder'
+            );
+            
+            bowlers.forEach(bowler => {
+                const bowlerCard = document.createElement('div');
+                bowlerCard.className = 'bowler-card';
+                bowlerCard.draggable = true;
+                bowlerCard.dataset.bowlerId = bowler.id;
+                bowlerCard.innerHTML = `
+                    <div class="fw-bold">${bowler.name}</div>
+                    <small>${bowler.position}</small>
+                    <small>Eco: ${bowler.economy_rate}</small>
+                `;
+                
+                bowlerCard.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', bowler.id);
+                });
+                
+                container.appendChild(bowlerCard);
+            });
+        }
+
+        // Drag and drop functions
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const playerId = ev.dataTransfer.getData('text/plain');
+            const position = ev.target.closest('.batting-position').dataset.position;
+            addPlayerToBattingOrder(parseInt(position), parseInt(playerId));
+        }
+
+        function addPlayerToBattingOrder(position, playerId) {
+            const player = squadPlayers.find(p => p.id == playerId);
+            if (player) {
+                battingOrder[position - 1] = player;
+                renderBattingOrder();
+            }
+        }
+
+        function assignBowlerToOver(bowlerId, over) {
+            const bowler = squadPlayers.find(p => p.id == bowlerId);
+            if (!bowler) return;
+            
+            // Check bowling rules
+            const bowlerOvers = bowlingOrder.filter(b => b && b.id == bowlerId).length;
+            if (bowlerOvers >= 4) {
+                alert('Bowler cannot bowl more than 4 overs!');
+                return;
+            }
+            
+            // Check consecutive overs rule
+            const prevOver = bowlingOrder[over - 2];
+            const nextOver = bowlingOrder[over];
+            if ((prevOver && prevOver.id == bowlerId) || (nextOver && nextOver.id == bowlerId)) {
+                alert('Bowler cannot bowl consecutive overs!');
+                return;
+            }
+            
+            bowlingOrder[over - 1] = bowler;
+            updateBowlingGrid();
+        }
+
+        function updateBowlingGrid() {
+            for (let over = 1; over <= 20; over++) {
+                const slot = document.querySelector(`[data-over="${over}"]`);
+                const bowler = bowlingOrder[over - 1];
+                
+                if (bowler) {
+                    slot.classList.add('filled');
+                    slot.querySelector('.bowler-name').textContent = bowler.name;
+                } else {
+                    slot.classList.remove('filled');
+                    slot.querySelector('.bowler-name').textContent = '';
+                }
+            }
+        }
+
+        // Auto-set functions
+        function autoSetBattingOrder() {
+            battingOrder = [];
+            
+            // Get best batsmen by average
+            const batsmen = squadPlayers.filter(p => 
+                p.position.includes('batsman') || p.position === 'Wicket-keeper' || p.position === 'All-rounder'
+            ).sort((a, b) => b.batting_average - a.batting_average);
+            
+            // Fill top 7 positions with best batsmen
+            for (let i = 0; i < Math.min(7, batsmen.length); i++) {
+                battingOrder[i] = batsmen[i];
+            }
+            
+            // Add remaining players
+            const remaining = squadPlayers.filter(p => !battingOrder.includes(p));
+            for (let i = 7; i < 11 && remaining.length > 0; i++) {
+                battingOrder[i] = remaining.shift();
+            }
+            
+            renderBattingOrder();
+        }
+
+        function autoSetBowlingOrder() {
+            bowlingOrder = [];
+            
+            const bowlers = squadPlayers.filter(p => 
+                p.position.includes('bowler') || p.position === 'All-rounder'
+            ).sort((a, b) => a.bowling_average - b.bowling_average);
+            
+            let bowlerIndex = 0;
+            let bowlerOvers = {};
+            
+            for (let over = 0; over < 20; over++) {
+                let assigned = false;
+                let attempts = 0;
+                
+                while (!assigned && attempts < bowlers.length) {
+                    const bowler = bowlers[bowlerIndex];
+                    const bowlerOverCount = bowlerOvers[bowler.id] || 0;
+                    
+                    // Check if bowler can bowl this over
+                    if (bowlerOverCount < 4) {
+                        // Check consecutive overs
+                        const isConsecutive = (over > 0 && bowlingOrder[over - 1] && bowlingOrder[over - 1].id === bowler.id);
+                        
+                        if (!isConsecutive) {
+                            bowlingOrder[over] = bowler;
+                            bowlerOvers[bowler.id] = bowlerOverCount + 1;
+                            assigned = true;
+                        }
+                    }
+                    
+                    bowlerIndex = (bowlerIndex + 1) % bowlers.length;
+                    attempts++;
+                }
+            }
+            
+            updateBowlingGrid();
+        }
+
+        // Save functions
+        async function saveBattingOrder() {
+            try {
+                const response = await fetch('/api/team/batting-order', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ battingOrder })
+                });
+                
+                if (response.ok) {
+                    alert('Batting order saved successfully!');
+                } else {
+                    alert('Failed to save batting order');
+                }
+            } catch (error) {
+                console.error('Error saving batting order:', error);
+                alert('Error saving batting order');
+            }
+        }
+
+        async function saveBowlingOrder() {
+            try {
+                const response = await fetch('/api/team/bowling-order', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ bowlingOrder })
+                });
+                
+                if (response.ok) {
+                    alert('Bowling order saved successfully!');
+                } else {
+                    alert('Failed to save bowling order');
+                }
+            } catch (error) {
+                console.error('Error saving bowling order:', error);
+                alert('Error saving bowling order');
+            }
         }
 
         // Initialize page

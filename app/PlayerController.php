@@ -183,12 +183,12 @@ class PlayerController {
             }
         }
         
-        // Validate position
-        $validPositions = ['GK', 'LB', 'CB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'ST', 'RW', 'CF'];
+        // Validate cricket position
+        $validPositions = ['Batsman', 'Bowler', 'All-rounder', 'Wicket-keeper', 'Opening-batsman', 'Middle-order', 'Finisher', 'Fast-bowler', 'Spin-bowler', 'Medium-pacer', 'Specialist-fielder'];
         if (!in_array($input['position'], $validPositions)) {
             header('Content-Type: application/json');
             http_response_code(400);
-            echo json_encode(['error' => 'Invalid position']);
+            echo json_encode(['error' => 'Invalid cricket position']);
             return;
         }
         
@@ -198,30 +198,35 @@ class PlayerController {
                 'position' => $input['position'],
                 'age' => $input['age'] ?? rand(18, 35),
                 'morale' => $input['morale'] ?? rand(40, 80),
-                'speed' => $input['speed'] ?? rand(30, 70),
-                'strength' => $input['strength'] ?? rand(30, 70),
-                'technique' => $input['technique'] ?? rand(30, 70),
+                'batting_average' => $input['batting_average'] ?? rand(15.00, 35.00),
+                'bowling_average' => $input['bowling_average'] ?? rand(25.00, 45.00),
+                'strike_rate' => $input['strike_rate'] ?? rand(80.00, 160.00),
+                'economy_rate' => $input['economy_rate'] ?? rand(6.00, 12.00),
+                'fielding_rating' => $input['fielding_rating'] ?? rand(40, 80),
                 'team_id' => $input['team_id']
             ];
             
-            // Calculate overall rating
-            $playerData['overall_rating'] = round(
-                ($playerData['speed'] * 0.3) + 
-                ($playerData['strength'] * 0.3) + 
-                ($playerData['technique'] * 0.4)
-            );
+            // Calculate overall rating based on cricket performance
+            $battingScore = ($playerData['batting_average'] / 50) * 40;
+            $bowlingScore = $playerData['bowling_average'] < 999 ? ((50 - min($playerData['bowling_average'], 50)) / 50) * 30 : 0;
+            $fieldingScore = ($playerData['fielding_rating'] / 100) * 20;
+            $strikeRateBonus = (($playerData['strike_rate'] - 100) / 100) * 10;
             
-            // Create player using direct SQL since createPlayer is private
+            $playerData['overall_rating'] = round(max(30, min(100, $battingScore + $bowlingScore + $fieldingScore + $strikeRateBonus)));
+            
+            // Create cricket player using direct SQL since createPlayer is private
             $db = $f3->get('DB');
-            $sql = 'INSERT INTO players (name, position, age, morale, speed, strength, technique, overall_rating, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            $sql = 'INSERT INTO players (name, position, age, morale, batting_average, bowling_average, strike_rate, economy_rate, fielding_rating, overall_rating, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
             $db->exec($sql, [
                 $playerData['name'],
                 $playerData['position'],
                 $playerData['age'],
                 $playerData['morale'],
-                $playerData['speed'],
-                $playerData['strength'],
-                $playerData['technique'],
+                $playerData['batting_average'],
+                $playerData['bowling_average'],
+                $playerData['strike_rate'],
+                $playerData['economy_rate'],
+                $playerData['fielding_rating'],
                 $playerData['overall_rating'],
                 $playerData['team_id']
             ]);
@@ -329,7 +334,7 @@ class PlayerController {
         }
         
         $team = $team[0];
-        $players = $this->player->getTeamPlayers($team['id']);
+        $players = $this->player->getTeamPlayers($team['id']); // Now returns 15 players
         
         // Calculate team stats
         $totalPlayers = count($players);
@@ -363,5 +368,196 @@ class PlayerController {
                 'top_players' => $topPlayers
             ]
         ]);
+    }
+    
+    /**
+     * Get batting order for user's team
+     */
+    public function apiGetBattingOrder() {
+        $f3 = Base::instance();
+        $db = $f3->get('DB');
+        
+        $user = $this->getAuthUser($f3);
+        if (!$user) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+        
+        // Get user's team
+        $team = $db->exec('SELECT id FROM teams WHERE user_id = ?', [$user->user_id]);
+        if (!$team) {
+            header('Content-Type: application/json');
+            http_response_code(404);
+            echo json_encode(['error' => 'Team not found']);
+            return;
+        }
+        
+        $battingOrder = $this->player->getBattingOrder($team[0]['id']);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['battingOrder' => $battingOrder]);
+    }
+    
+    /**
+     * Save batting order for user's team
+     */
+    public function apiSaveBattingOrder() {
+        $f3 = Base::instance();
+        $db = $f3->get('DB');
+        
+        $user = $this->getAuthUser($f3);
+        if (!$user) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+        
+        // Get user's team
+        $team = $db->exec('SELECT id FROM teams WHERE user_id = ?', [$user->user_id]);
+        if (!$team) {
+            header('Content-Type: application/json');
+            http_response_code(404);
+            echo json_encode(['error' => 'Team not found']);
+            return;
+        }
+        
+        $input = json_decode($f3->get('BODY'), true);
+        if (!isset($input['battingOrder'])) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['error' => 'Batting order is required']);
+            return;
+        }
+        
+        // Validate batting order (must be exactly 11 players)
+        $battingOrder = $input['battingOrder'];
+        if (count($battingOrder) !== 11) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['error' => 'Batting order must contain exactly 11 players']);
+            return;
+        }
+        
+        try {
+            $this->player->saveBattingOrder($team[0]['id'], $battingOrder);
+            
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to save batting order']);
+        }
+    }
+    
+    /**
+     * Get bowling order for user's team
+     */
+    public function apiGetBowlingOrder() {
+        $f3 = Base::instance();
+        $db = $f3->get('DB');
+        
+        $user = $this->getAuthUser($f3);
+        if (!$user) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+        
+        // Get user's team
+        $team = $db->exec('SELECT id FROM teams WHERE user_id = ?', [$user->user_id]);
+        if (!$team) {
+            header('Content-Type: application/json');
+            http_response_code(404);
+            echo json_encode(['error' => 'Team not found']);
+            return;
+        }
+        
+        $bowlingOrder = $this->player->getBowlingOrder($team[0]['id']);
+        
+        header('Content-Type: application/json');
+        echo json_encode(['bowlingOrder' => $bowlingOrder]);
+    }
+    
+    /**
+     * Save bowling order for user's team
+     */
+    public function apiSaveBowlingOrder() {
+        $f3 = Base::instance();
+        $db = $f3->get('DB');
+        
+        $user = $this->getAuthUser($f3);
+        if (!$user) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+        
+        // Get user's team
+        $team = $db->exec('SELECT id FROM teams WHERE user_id = ?', [$user->user_id]);
+        if (!$team) {
+            header('Content-Type: application/json');
+            http_response_code(404);
+            echo json_encode(['error' => 'Team not found']);
+            return;
+        }
+        
+        $input = json_decode($f3->get('BODY'), true);
+        if (!isset($input['bowlingOrder'])) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['error' => 'Bowling order is required']);
+            return;
+        }
+        
+        // Validate bowling order (20 overs, max 4 per bowler)
+        $bowlingOrder = $input['bowlingOrder'];
+        if (count($bowlingOrder) !== 20) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['error' => 'Bowling order must contain exactly 20 overs']);
+            return;
+        }
+        
+        // Check bowling rules
+        $bowlerOvers = [];
+        for ($i = 0; $i < 20; $i++) {
+            if (!$bowlingOrder[$i]) continue;
+            
+            $bowlerId = $bowlingOrder[$i]['id'];
+            $bowlerOvers[$bowlerId] = ($bowlerOvers[$bowlerId] ?? 0) + 1;
+            
+            // Max 4 overs per bowler
+            if ($bowlerOvers[$bowlerId] > 4) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode(['error' => 'No bowler can bowl more than 4 overs']);
+                return;
+            }
+            
+            // No consecutive overs
+            if ($i > 0 && $bowlingOrder[$i-1] && $bowlingOrder[$i-1]['id'] === $bowlerId) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode(['error' => 'Bowler cannot bowl consecutive overs']);
+                return;
+            }
+        }
+        
+        try {
+            $this->player->saveBowlingOrder($team[0]['id'], $bowlingOrder);
+            
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to save bowling order']);
+        }
     }
 }

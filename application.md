@@ -2,7 +2,7 @@
 
 This is one line definition of the app.
 
-a web/mobile MVP named SwitchedHit focused on club creation, squad management, and daily simulated league matches. Matches are not live; they are pre-scheduled and, at kickoff time, a simulation runs automatically and publishes a scorecard + ball-by-ball commentary.
+a web/mobile MVP named SwitchedHit focused on club creation, squad management, and daily simulated league of t20 cricket matches. Matches are not live; they are pre-scheduled and, at start time, a simulation runs automatically and publishes a scorecard + ball-by-ball commentary.
 
 
 Lets plan the Sprint Design to build this in steps to give optimal iterations

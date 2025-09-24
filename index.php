@@ -86,6 +86,12 @@ $f3->route('PUT /api/players/@id', 'PlayerController->apiUpdatePlayer');
 $f3->route('DELETE /api/players/@id', 'PlayerController->apiDeletePlayer');
 $f3->route('GET /api/team/composition', 'PlayerController->apiGetTeamComposition');
 
+// Cricket lineup API routes
+$f3->route('GET /api/team/batting-order', 'PlayerController->apiGetBattingOrder');
+$f3->route('POST /api/team/batting-order', 'PlayerController->apiSaveBattingOrder');
+$f3->route('GET /api/team/bowling-order', 'PlayerController->apiGetBowlingOrder');
+$f3->route('POST /api/team/bowling-order', 'PlayerController->apiSaveBowlingOrder');
+
 // Run the application
 try {
     $f3->run();

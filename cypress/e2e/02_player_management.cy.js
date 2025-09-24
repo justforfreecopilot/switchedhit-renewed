@@ -39,10 +39,10 @@ describe('Player Management (Sprint 2)', () => {
           
           // Verify different positions are represented
           const positions = playersResponse.body.players.map(player => player.position)
-          expect(positions).to.include('GK')
-          expect(positions).to.include('CB')
-          expect(positions).to.include('CM')
-          expect(positions).to.include('ST')
+          expect(positions).to.include('Wicket-keeper')
+          expect(positions).to.include('Opening-batsman')
+          expect(positions).to.include('All-rounder')
+          expect(positions).to.include('Fast-bowler')
         })
       })
     })
@@ -63,22 +63,22 @@ describe('Player Management (Sprint 2)', () => {
           expect(player).to.have.property('name')
           expect(player).to.have.property('position')
           expect(player).to.have.property('age')
-          expect(player).to.have.property('speed')
-          expect(player).to.have.property('strength')
-          expect(player).to.have.property('technique')
-          expect(player).to.have.property('overall_rating')
-          expect(player).to.have.property('morale')
+          expect(player).to.have.property('batting_average')
+          expect(player).to.have.property('bowling_average')
+          expect(player).to.have.property('strike_rate')
+          expect(player).to.have.property('economy_rate')
+          expect(player).to.have.property('fielding_rating')
           
           // Check stat ranges
           expect(player.age).to.be.within(18, 35)
-          expect(player.speed).to.be.within(1, 100)
-          expect(player.strength).to.be.within(1, 100)
-          expect(player.technique).to.be.within(1, 100)
-          expect(player.overall_rating).to.be.within(1, 100)
-          expect(player.morale).to.be.within(1, 100)
+          expect(player.batting_average).to.be.at.least(0)
+          expect(player.bowling_average).to.be.at.least(0)
+          expect(player.strike_rate).to.be.at.least(0)
+          expect(player.economy_rate).to.be.at.least(0)
+          expect(player.fielding_rating).to.be.within(1, 100)
           
           // Check valid positions
-          const validPositions = ['GK', 'LB', 'CB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'ST', 'RW', 'CF']
+          const validPositions = ['Wicket-keeper', 'Opening-batsman', 'Middle-order', 'All-rounder', 'Finisher', 'Fast-bowler', 'Spin-bowler', 'Medium-pacer', 'Slip-fielder', 'Boundary-fielder', 'Deep-fielder']
           expect(validPositions).to.include(player.position)
         })
       })
@@ -189,12 +189,12 @@ describe('Player Management (Sprint 2)', () => {
       cy.get('#team-rating').should('not.contain', '0')
     })
 
-    it('should display formation on football pitch', () => {
+    it('should display cricket field layout', () => {
       cy.visit('/team-composition')
       
-      // Check if formation container exists
-      cy.get('#formation-container').should('be.visible')
-      cy.get('.formation-line').should('have.length.greaterThan', 0)
+      // Check if team container exists
+      cy.get('#team-container').should('be.visible')
+      cy.get('.cricket-line').should('have.length.greaterThan', 0)
       cy.get('.player-card').should('have.length.greaterThan', 0)
     })
 
@@ -206,24 +206,24 @@ describe('Player Management (Sprint 2)', () => {
       cy.get('#position-breakdown .col-md-3').should('have.length.greaterThan', 0)
     })
 
-    it('should open player detail from formation', () => {
+    it('should open player detail from team setup', () => {
       cy.visit('/team-composition')
       
-      // Click on a player card in formation
+      // Click on a player card in team setup
       cy.get('.player-card').first().click()
       
       // Modal should open
       cy.get('#playerDetailModal').should('be.visible')
     })
 
-    it('should refresh formation', () => {
+    it('should refresh team layout', () => {
       cy.visit('/team-composition')
       
       // Click refresh button
       cy.contains('button', 'Refresh').click()
       
-      // Formation should still be visible after refresh
-      cy.get('.formation-line').should('have.length.greaterThan', 0)
+      // Cricket layout should still be visible after refresh
+      cy.get('.cricket-line').should('have.length.greaterThan', 0)
     })
   })
 
