@@ -57,21 +57,78 @@ This sprint focuses on implementing user authentication (login/register) and a b
 - **Perform security checks**: Ensure passwords are hashed, inputs are sanitized, and no SQL injection vulnerabilities.
 
 ### Sprint 1 Completion Criteria
-- [ ] Login page implemented with validation and AJAX submission
-- [ ] Registration page with team details and validation
-- [ ] User dashboard displaying team information
-- [ ] Backend authentication APIs working
+- [x] Login page implemented with validation and AJAX submission
+- [x] Registration page with team details and validation
+- [x] User dashboard displaying team information
+- [x] Backend authentication APIs working
 - [x] User and team tables created and migrated
-- [ ] Session and JWT token management configured
-- [ ] Responsive design across pages
-- [ ] Navigation and logout functionality
-- [ ] Admin user management endpoints (if applicable)
-- [ ] All forms validated and secure
+- [x] Session and JWT token management configured
+- [x] Responsive design across pages
+- [x] Navigation and logout functionality
+- [x] Admin user management endpoints (if applicable)
+- [x] All forms validated and secure
 
 ---
 
 ## Sprint 2: Register Flow V2
-*(To be detailed based on tasks.md)*
+
+This sprint enhances the registration flow to automatically generate a starting squad of players upon team creation and adds player management features.
+
+### Frontend Actions
+- **Enhance registration flow to include team member generation**: Modify the registration page to automatically generate a starting squad of 11 players upon team creation. Display a loading indicator during generation and show a success message with player count. Ensure the flow remains smooth and user-friendly.
+- **Create player list view**: Build a new page based on `app-user-list.html` or data table templates. Display a list of players with columns for name, position, age, and key stats (e.g., overall rating). Include sorting and filtering options. Link to individual player details.
+- **Implement player detail modal/page**: Create a modal or dedicated page (adapt from `app-user-view-account.html`) showing detailed player info: name, position, stats breakdown (e.g., speed, strength, technique), age, morale. Include edit options for admins.
+- **Add team overview page**: Design a page (based on dashboard templates) that shows the full team composition, including player photos/icons, positions, and summary stats. Visualize the team as a formation diagram.
+- **Update dashboard to include player summary**: Modify the dashboard to add a section with player count, average age, team strength, and top players. Use charts or tables for visualization.
+
+### Backend Actions
+- **Implement team member generation algorithm**: Create a service or function to generate 11 players per team with random but balanced stats. Use predefined positions (GK, LB, CB, RB, CDM, CM, CAM, LW, ST, RW, CF) and assign stats like speed (1-100), strength, technique, etc. Ensure variety and fairness.
+- **Create player stats calculation logic**: Develop functions to compute derived stats like overall rating based on individual attributes. Update stats dynamically as needed (e.g., after matches).
+- **Build player CRUD endpoints (admin)**: Implement GET /api/players, POST /api/players, PUT /api/players/:id, DELETE /api/players/:id. Restrict to admins. Include bulk operations if needed.
+- **Add player detail management API**: Create endpoints for updating player details, such as PUT /api/players/:id/stats for stat adjustments.
+- **Implement team composition validation**: Add logic to ensure teams have valid compositions (e.g., at least 1 GK, max 5 DEF, etc.). Validate during lineup setup or generation.
+
+### Database Actions
+- **Design player table schema**:
+  ```sql
+  CREATE TABLE players (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      position ENUM('GK', 'LB', 'CB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'ST', 'RW', 'CF') NOT NULL,
+      age INT DEFAULT 18,
+      morale INT DEFAULT 50,
+      team_id INT NOT NULL,
+      FOREIGN KEY (team_id) REFERENCES teams(id),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+  ```
+- **Create player stats table or embed stats in player table**: Embed stats in `players` table with columns like speed (INT), strength (INT), technique (INT), overall_rating (INT computed). Alternatively, create a separate `player_stats` table linked by player_id for flexibility.
+- **Add foreign key relationships**: Ensure `players.team_id` references `teams.id`, and `teams.user_id` references `users.id`. Add CASCADE on delete for data integrity.
+- **Implement database indexes for performance**: Add indexes on `players.team_id`, `players.position`, and `teams.user_id` to speed up queries.
+
+### Testing and Validation Actions
+- **Test player generation during registration**: Verify that 11 players are created with balanced stats and positions upon team registration.
+- **Validate player list and detail views**: Ensure player data displays correctly, with sorting, filtering, and detailed stats.
+- **Test team overview and dashboard updates**: Check that team composition and summaries are accurate and visually appealing.
+- **Validate backend APIs**: Test player CRUD operations, stat calculations, and composition validation.
+- **Check database schema and relationships**: Ensure tables are created correctly with proper constraints and indexes.
+
+### Sprint 2 Completion Criteria
+- [x] Registration flow enhanced with automatic player generation
+- [x] Player list view implemented with sorting and filtering
+- [x] Player detail modal/page created
+- [x] Team overview page designed
+- [x] Dashboard updated with player summary
+- [x] Player generation algorithm implemented
+- [x] Player stats calculation logic developed
+- [x] Player CRUD endpoints built (admin)
+- [x] Player detail management API added
+- [x] Team composition validation implemented
+- [x] Player table schema designed and migrated
+- [x] Player stats embedded or table created
+- [x] Foreign key relationships added
+- [x] Database indexes implemented
+- [x] All features tested and validated
 
 ## Sprint 3: Setup/Configure Daily Team Lineup
 *(To be detailed based on tasks.md)*

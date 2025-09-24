@@ -1,9 +1,9 @@
 <?php
 
 // Check for static files before loading F3
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = isset($_SERVER['REQUEST_URI']) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : '';
 $file = __DIR__ . $path;
-if (file_exists($file) && !is_dir($file)) {
+if ($path && file_exists($file) && !is_dir($file)) {
     return false; // Let PHP serve the file
 }
 
@@ -62,12 +62,29 @@ $f3->route('GET /', 'Home->index');
 $f3->route('GET /login', 'AuthController->login');
 $f3->route('GET /register', 'AuthController->register');
 $f3->route('GET /dashboard', 'Home->dashboard');
+$f3->route('GET /players', 'PlayerController->playersPage');
+$f3->route('GET /team-composition', 'PlayerController->teamCompositionPage');
 
 // API routes
 $f3->route('POST /api/login', 'AuthController->apiLogin');
 $f3->route('POST /api/register', 'AuthController->apiRegister');
 $f3->route('GET /api/user/team', 'AuthController->apiUserTeam');
 $f3->route('GET /api/user/me', 'AuthController->apiUserMe');
+
+// Admin API routes
+$f3->route('GET /api/users', 'AuthController->apiGetUsers');
+$f3->route('POST /api/users', 'AuthController->apiCreateUser');
+$f3->route('PUT /api/users/@id', 'AuthController->apiUpdateUser');
+$f3->route('DELETE /api/users/@id', 'AuthController->apiDeleteUser');
+
+// Player API routes
+$f3->route('GET /api/players/my', 'PlayerController->apiGetMyPlayers');
+$f3->route('GET /api/players', 'PlayerController->apiGetAllPlayers');
+$f3->route('GET /api/players/@id', 'PlayerController->apiGetPlayer');
+$f3->route('POST /api/players', 'PlayerController->apiCreatePlayer');
+$f3->route('PUT /api/players/@id', 'PlayerController->apiUpdatePlayer');
+$f3->route('DELETE /api/players/@id', 'PlayerController->apiDeletePlayer');
+$f3->route('GET /api/team/composition', 'PlayerController->apiGetTeamComposition');
 
 // Run the application
 try {

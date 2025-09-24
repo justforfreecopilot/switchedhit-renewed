@@ -287,6 +287,92 @@
           <div class="content-wrapper">
             <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row g-6 mb-6">
+                <!-- Player Summary Cards -->
+                <div class="col-sm-6 col-xl-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <div class="me-1">
+                          <p class="text-heading mb-1">Total Players</p>
+                          <div class="d-flex align-items-center">
+                            <h4 class="mb-1 me-2" id="total-players">0</h4>
+                          </div>
+                          <small class="mb-0">In your squad</small>
+                        </div>
+                        <div class="avatar">
+                          <div class="avatar-initial bg-label-primary rounded-3">
+                            <i class="icon-base ri ri-team-line icon-26px"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <div class="me-1">
+                          <p class="text-heading mb-1">Average Age</p>
+                          <div class="d-flex align-items-center">
+                            <h4 class="mb-1 me-1" id="avg-age">0</h4>
+                            <span class="text-muted">years</span>
+                          </div>
+                          <small class="mb-0">Team average</small>
+                        </div>
+                        <div class="avatar">
+                          <div class="avatar-initial bg-label-info rounded-3">
+                            <i class="icon-base ri ri-calendar-line icon-26px"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <div class="me-1">
+                          <p class="text-heading mb-1">Team Rating</p>
+                          <div class="d-flex align-items-center">
+                            <h4 class="mb-1 me-1" id="team-rating">0</h4>
+                            <span class="text-muted">/100</span>
+                          </div>
+                          <small class="mb-0">Average rating</small>
+                        </div>
+                        <div class="avatar">
+                          <div class="avatar-initial bg-label-success rounded-3">
+                            <i class="icon-base ri ri-star-line icon-26px"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <div class="me-1">
+                          <p class="text-heading mb-1">Top Player</p>
+                          <div class="d-flex align-items-center">
+                            <h6 class="mb-1 me-1 text-truncate" id="top-player" style="max-width: 100px;">-</h6>
+                          </div>
+                          <small class="mb-0" id="top-player-rating">Rating: 0</small>
+                        </div>
+                        <div class="avatar">
+                          <div class="avatar-initial bg-label-warning rounded-3">
+                            <i class="icon-base ri ri-trophy-line icon-26px"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="row g-6">
                 <!-- User Info Card -->
                 <div class="col-md-12 col-xxl-6">
@@ -317,6 +403,37 @@
                   </div>
                 </div>
                 <!--/ Team Info Card -->
+
+                <!-- Top Players Card -->
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0">Top Players</h5>
+                      <a href="/players" class="btn btn-sm btn-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table table-borderless">
+                          <thead>
+                            <tr>
+                              <th>Player</th>
+                              <th>Position</th>
+                              <th>Rating</th>
+                              <th>Age</th>
+                              <th>Morale</th>
+                            </tr>
+                          </thead>
+                          <tbody id="top-players-table">
+                            <tr>
+                              <td colspan="5" class="text-center text-muted">Loading players...</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/ Top Players Card -->
               </div>
             </div>
             <!-- / Content -->
@@ -428,6 +545,83 @@
             },
             error: function() {
                 $('#teamInfo').html('<div class="alert alert-danger">Failed to load team info</div>');
+            }
+        });
+
+        // Fetch team composition for player stats
+        $.ajax({
+            url: '/api/team/composition',
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function(data) {
+                if (data.error) {
+                    console.error('Failed to load team composition:', data.error);
+                    return;
+                }
+                
+                const stats = data.stats;
+                const players = data.players;
+                
+                // Update stat cards
+                $('#total-players').text(stats.total_players);
+                $('#avg-age').text(stats.average_age);
+                $('#team-rating').text(stats.average_rating);
+                
+                if (stats.top_players && stats.top_players.length > 0) {
+                    const topPlayer = stats.top_players[0];
+                    $('#top-player').text(topPlayer.name);
+                    $('#top-player-rating').text(`Rating: ${topPlayer.overall_rating}`);
+                }
+                
+                // Update top players table
+                let topPlayersHtml = '';
+                stats.top_players.slice(0, 5).forEach(player => {
+                    topPlayersHtml += `
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-sm me-3">
+                                        <div class="avatar-initial bg-label-primary rounded-circle">
+                                            <i class="icon-base ri ri-user-line"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">${player.name}</h6>
+                                        <small class="text-muted">ID: ${player.id}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-label-info">${player.position}</span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">${player.overall_rating}</span>
+                                    <div class="progress" style="width: 60px; height: 6px;">
+                                        <div class="progress-bar" style="width: ${player.overall_rating}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${player.age} years</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">${player.morale}</span>
+                                    <div class="progress" style="width: 60px; height: 6px;">
+                                        <div class="progress-bar bg-info" style="width: ${player.morale}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                if (topPlayersHtml) {
+                    $('#top-players-table').html(topPlayersHtml);
+                } else {
+                    $('#top-players-table').html('<tr><td colspan="5" class="text-center text-muted">No players found</td></tr>');
+                }
+            },
+            error: function() {
+                console.error('Failed to load player stats');
+                $('#top-players-table').html('<tr><td colspan="5" class="text-center text-danger">Failed to load player data</td></tr>');
             }
         });
 

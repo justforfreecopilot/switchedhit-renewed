@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en" class="layout-navbar-fixed layout-menu-fixed layout-compact" dir="ltr" data-skin="default" data-bs-theme="light" data-assets-path="assets/" data-template="vertical-menu-template">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>{{@title}} - SwitchedHit</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/vendor/fonts/iconify-icons.css" />
+    
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="assets/vendor/libs/node-waves/node-waves.css" />
+    <link rel="stylesheet" href="assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    
+    <script src="assets/vendor/js/helpers.js"></script>
+    <script src="assets/js/config.js"></script>
+
+    <style>
+        .football-pitch {
+            background: linear-gradient(90deg, #4CAF50 0%, #66BB6A 50%, #4CAF50 100%);
+            border: 3px solid #2E7D32;
+            border-radius: 8px;
+            position: relative;
+            min-height: 600px;
+            padding: 20px;
+        }
+        
+        .pitch-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .center-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: white;
+            transform: translateX(-50%);
+        }
+        
+        .penalty-area-left, .penalty-area-right {
+            position: absolute;
+            top: 50%;
+            width: 80px;
+            height: 150px;
+            border: 2px solid white;
+            transform: translateY(-50%);
+        }
+        
+        .penalty-area-left {
+            left: 0;
+            border-right: none;
+        }
+        
+        .penalty-area-right {
+            right: 0;
+            border-left: none;
+        }
+        
+        .formation-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .formation-line {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        
+        .player-card {
+            background: white;
+            border: 2px solid #1976D2;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            min-width: 80px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .player-name {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #1976D2;
+        }
+        
+        .player-position {
+            font-size: 9px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .player-rating {
+            font-size: 10px;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
+            <aside id="layout-menu" class="layout-menu menu-vertical menu">
+                <div class="app-brand demo">
+                    <a href="/dashboard" class="app-brand-link">
+                        <span class="app-brand-text demo menu-text fw-bold ms-2">SwitchedHit</span>
+                    </a>
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="icon-base ri ri-close-line align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+                    <!-- Main -->
+                    <li class="menu-item">
+                        <a href="/dashboard" class="menu-link">
+                            <i class="menu-icon icon-base ri ri-dashboard-line"></i>
+                            <div>Dashboard</div>
+                        </a>
+                    </li>
+
+                    <!-- Players -->
+                    <li class="menu-item active open">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon icon-base ri ri-team-line"></i>
+                            <div>Players</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/players" class="menu-link">
+                                    <div>Player List</div>
+                                </a>
+                            </li>
+                            <li class="menu-item active">
+                                <a href="/team-composition" class="menu-link">
+                                    <div>Team Overview</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Future features -->
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link">
+                            <i class="menu-icon icon-base ri ri-settings-line"></i>
+                            <div>Lineup</div>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            <!-- / Menu -->
+
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Navbar -->
+                <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                            <i class="icon-base ri ri-menu-line icon-22px"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                            <!-- User -->
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <img src="assets/img/avatars/1.png" alt="avatar" class="rounded-circle" />
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
+                                    <li>
+                                        <a class="dropdown-item" href="/dashboard">
+                                            <i class="icon-base ri ri-user-3-line icon-22px me-3"></i>
+                                            <span class="align-middle">Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0);" onclick="logout()">
+                                            <i class="icon-base ri ri-logout-box-r-line icon-22px me-3"></i>
+                                            <span class="align-middle">Logout</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- / Navbar -->
+
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <!-- Content -->
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <h4 class="py-3 mb-4">
+                            <span class="text-muted fw-light">Team /</span> Overview
+                        </h4>
+
+                        <!-- Team Info -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 class="card-title" id="team-name">Loading...</h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="icon-base ri ri-building-line me-1"></i>
+                                                Stadium: <span id="team-stadium">-</span>
+                                            </small><br>
+                                            <small class="text-muted">
+                                                <i class="icon-base ri ri-grass-line me-1"></i>
+                                                Pitch: <span id="team-pitch">-</span>
+                                            </small>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="stats-grid">
+                                            <div class="text-center">
+                                                <h6 class="mb-1" id="total-players">0</h6>
+                                                <small class="text-muted">Total Players</small>
+                                            </div>
+                                            <div class="text-center">
+                                                <h6 class="mb-1" id="avg-age">0</h6>
+                                                <small class="text-muted">Average Age</small>
+                                            </div>
+                                            <div class="text-center">
+                                                <h6 class="mb-1" id="team-rating">0</h6>
+                                                <small class="text-muted">Team Rating</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formation Display -->
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Team Formation</h5>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted me-3">Formation: 4-4-2</small>
+                                    <button class="btn btn-sm btn-primary" onclick="refreshFormation()">
+                                        <i class="icon-base ri ri-refresh-line me-1"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="football-pitch">
+                                    <!-- Pitch lines -->
+                                    <div class="pitch-lines">
+                                        <div class="center-line"></div>
+                                        <div class="center-circle"></div>
+                                        <div class="penalty-area-left"></div>
+                                        <div class="penalty-area-right"></div>
+                                    </div>
+                                    
+                                    <!-- Formation container -->
+                                    <div class="formation-container" id="formation-container">
+                                        <!-- Players will be dynamically placed here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Position Breakdown -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Position Breakdown</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row" id="position-breakdown">
+                                            <!-- Position cards will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / Content -->
+
+                    <!-- Footer -->
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="container-xxl">
+                            <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+                                <div class="mb-2 mb-md-0">
+                                    © 2024 SwitchedHit. Made with ❤️
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- / Footer -->
+
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
+        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <!-- Player Detail Modal (reused from players.html) -->
+    <div class="modal fade" id="playerDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Player Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">Basic Info</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Name</label>
+                                        <p class="form-text" id="modal-player-name">-</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Position</label>
+                                        <p class="form-text" id="modal-player-position">-</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Age</label>
+                                        <p class="form-text" id="modal-player-age">-</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Overall Rating</label>
+                                        <p class="form-text" id="modal-player-rating">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0">Statistics</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Speed</label>
+                                        <div class="progress mb-1">
+                                            <div class="progress-bar" role="progressbar" id="modal-speed-bar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted" id="modal-speed-value">0/100</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Strength</label>
+                                        <div class="progress mb-1">
+                                            <div class="progress-bar bg-success" role="progressbar" id="modal-strength-bar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted" id="modal-strength-value">0/100</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Technique</label>
+                                        <div class="progress mb-1">
+                                            <div class="progress-bar bg-warning" role="progressbar" id="modal-technique-bar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted" id="modal-technique-value">0/100</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Morale</label>
+                                        <div class="progress mb-1">
+                                            <div class="progress-bar bg-info" role="progressbar" id="modal-morale-bar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted" id="modal-morale-value">0/100</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core JS -->
+    <script src="assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="assets/vendor/libs/popper/popper.js"></script>
+    <script src="assets/vendor/js/bootstrap.js"></script>
+    <script src="assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <script>
+        // Authentication token management
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        let teamData = null;
+        let playersData = [];
+        let compositionData = {};
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+
+        // Load team composition data
+        async function loadTeamComposition() {
+            try {
+                const response = await fetch('/api/team/composition', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    teamData = data.team;
+                    playersData = data.players;
+                    compositionData = data.composition;
+                    
+                    updateTeamInfo(data.stats);
+                    renderFormation();
+                    renderPositionBreakdown();
+                } else if (response.status === 401) {
+                    logout();
+                } else {
+                    console.error('Failed to load team composition');
+                }
+            } catch (error) {
+                console.error('Error loading team composition:', error);
+            }
+        }
+
+        // Update team info section
+        function updateTeamInfo(stats) {
+            document.getElementById('team-name').textContent = teamData.name;
+            document.getElementById('team-stadium').textContent = teamData.stadium_name || 'Not set';
+            document.getElementById('team-pitch').textContent = teamData.pitch_type || 'Not set';
+            
+            document.getElementById('total-players').textContent = stats.total_players;
+            document.getElementById('avg-age').textContent = `${stats.average_age} years`;
+            document.getElementById('team-rating').textContent = `${stats.average_rating}/100`;
+        }
+
+        // Render formation on the pitch
+        function renderFormation() {
+            const container = document.getElementById('formation-container');
+            container.innerHTML = '';
+            
+            // Define formation structure (4-4-2)
+            const formation = [
+                { positions: ['GK'], line: 'goalkeeper' },
+                { positions: ['LB', 'CB', 'CB', 'RB'], line: 'defense' },
+                { positions: ['LM', 'CM', 'CM', 'RM'], line: 'midfield' },
+                { positions: ['ST', 'ST'], line: 'attack' }
+            ];
+            
+            // Map position aliases to actual positions
+            const positionMap = {
+                'LM': ['LW', 'CM'],
+                'RM': ['RW', 'CM'],
+                'CM': ['CM', 'CDM', 'CAM']
+            };
+            
+            formation.forEach(line => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'formation-line';
+                
+                line.positions.forEach(pos => {
+                    // Find player for this position
+                    let player = null;
+                    if (positionMap[pos]) {
+                        // Try to find player from mapped positions
+                        for (let mappedPos of positionMap[pos]) {
+                            if (compositionData[mappedPos] && compositionData[mappedPos].length > 0) {
+                                player = compositionData[mappedPos][0];
+                                break;
+                            }
+                        }
+                    } else if (compositionData[pos] && compositionData[pos].length > 0) {
+                        player = compositionData[pos][0];
+                    }
+                    
+                    const playerCard = document.createElement('div');
+                    playerCard.className = 'player-card';
+                    
+                    if (player) {
+                        playerCard.innerHTML = `
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-position">${player.position}</div>
+                            <div class="player-rating">${player.overall_rating}</div>
+                        `;
+                        playerCard.onclick = () => showPlayerDetail(player.id);
+                    } else {
+                        playerCard.innerHTML = `
+                            <div class="player-name">Empty</div>
+                            <div class="player-position">${pos}</div>
+                            <div class="player-rating">-</div>
+                        `;
+                        playerCard.style.opacity = '0.5';
+                    }
+                    
+                    lineDiv.appendChild(playerCard);
+                });
+                
+                container.appendChild(lineDiv);
+            });
+        }
+
+        // Render position breakdown
+        function renderPositionBreakdown() {
+            const container = document.getElementById('position-breakdown');
+            container.innerHTML = '';
+            
+            const positionNames = {
+                'GK': 'Goalkeeper',
+                'LB': 'Left Back',
+                'CB': 'Center Back',
+                'RB': 'Right Back',
+                'CDM': 'Def. Midfielder',
+                'CM': 'Midfielder',
+                'CAM': 'Att. Midfielder',
+                'LW': 'Left Wing',
+                'RW': 'Right Wing',
+                'ST': 'Striker',
+                'CF': 'Forward'
+            };
+            
+            Object.keys(compositionData).forEach(position => {
+                const players = compositionData[position];
+                if (players.length === 0) return;
+                
+                const col = document.createElement('div');
+                col.className = 'col-md-3 mb-3';
+                
+                const avgRating = players.reduce((sum, p) => sum + p.overall_rating, 0) / players.length;
+                
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="avatar avatar-lg mx-auto mb-3">
+                                <div class="avatar-initial bg-label-primary rounded-3">
+                                    <i class="icon-base ri ri-user-line icon-24px"></i>
+                                </div>
+                            </div>
+                            <h6 class="card-title mb-1">${positionNames[position] || position}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">${players.length} player${players.length > 1 ? 's' : ''}</small><br>
+                                <span class="badge bg-label-success">Avg: ${avgRating.toFixed(1)}</span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(col);
+            });
+        }
+
+        // Show player detail modal
+        async function showPlayerDetail(playerId) {
+            try {
+                const response = await fetch(`/api/players/${playerId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const player = data.player;
+                    
+                    // Update modal content
+                    document.getElementById('modal-player-name').textContent = player.name;
+                    document.getElementById('modal-player-position').textContent = player.position;
+                    document.getElementById('modal-player-age').textContent = `${player.age} years`;
+                    document.getElementById('modal-player-rating').textContent = `${player.overall_rating}/100`;
+                    
+                    // Update progress bars
+                    document.getElementById('modal-speed-bar').style.width = `${player.speed}%`;
+                    document.getElementById('modal-speed-value').textContent = `${player.speed}/100`;
+                    
+                    document.getElementById('modal-strength-bar').style.width = `${player.strength}%`;
+                    document.getElementById('modal-strength-value').textContent = `${player.strength}/100`;
+                    
+                    document.getElementById('modal-technique-bar').style.width = `${player.technique}%`;
+                    document.getElementById('modal-technique-value').textContent = `${player.technique}/100`;
+                    
+                    document.getElementById('modal-morale-bar').style.width = `${player.morale}%`;
+                    document.getElementById('modal-morale-value').textContent = `${player.morale}/100`;
+                    
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('playerDetailModal'));
+                    modal.show();
+                } else {
+                    console.error('Failed to load player details');
+                }
+            } catch (error) {
+                console.error('Error loading player details:', error);
+            }
+        }
+
+        // Refresh formation
+        function refreshFormation() {
+            loadTeamComposition();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTeamComposition();
+        });
+    </script>
+</body>
+</html>
